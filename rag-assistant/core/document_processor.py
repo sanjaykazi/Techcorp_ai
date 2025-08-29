@@ -4,14 +4,28 @@ Document Processor - Handles chunking and processing of TechCorp documents
 
 import os
 import re
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from pathlib import Path
 import hashlib
 
 class DocumentProcessor:
-    def __init__(self, vector_engine):
+    def __init__(self, vector_engine, docs_path: Optional[str] = None):
         self.vector_engine = vector_engine
-        self.docs_path = Path(__file__).parent.parent.parent / "techcorp-docs"
+
+        # Determine documents path with configurability
+        base_dir = Path(__file__).parent.parent.parent
+        env_docs_path = os.environ.get("TECHCORP_DOCS_PATH")
+        chosen_path = docs_path or env_docs_path
+
+        if chosen_path:
+            candidate = Path(chosen_path)
+            # Resolve relative paths against project root
+            if not candidate.is_absolute():
+                candidate = base_dir / candidate
+            self.docs_path = candidate
+        else:
+            # Default to repo's techcorp-docs folder
+            self.docs_path = base_dir / "techcorp-docs"
         
         # Chunking parameters
         self.chunk_size = 500  # characters

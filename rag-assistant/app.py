@@ -31,7 +31,10 @@ print("[INIT] Vector engine ready")
 chat_engine = ChatEngine(vector_engine)
 print("[INIT] Chat engine ready")
 
-doc_processor = DocumentProcessor(vector_engine)
+docs_path_override = os.environ.get('TECHCORP_DOCS_PATH')
+if docs_path_override:
+    print(f"[INIT] Using docs path from TECHCORP_DOCS_PATH: {docs_path_override}")
+doc_processor = DocumentProcessor(vector_engine, docs_path=docs_path_override)
 print("[INIT] Document processor ready")
 
 @app.route('/')
