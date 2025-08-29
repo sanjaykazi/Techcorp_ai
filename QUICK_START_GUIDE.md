@@ -14,7 +14,7 @@ This guide will help you get the TechCorp AI assistant running on your machine q
 
 ### Step 1: Clone and Navigate
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/sanjaykazi/Techcorp_ai.git
 cd Techcorp_ai
 ```
 
