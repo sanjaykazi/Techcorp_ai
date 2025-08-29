@@ -10,6 +10,51 @@ To get started with this project, follow these steps:
 2. Install dependencies
 3. Run the application
 
+## Quick Start (recommended)
+
+```bash
+git clone https://github.com/sanjaykazi/Techcorp_ai.git
+cd Techcorp_ai
+./run.sh
+```
+
+Use a different documents folder:
+
+```bash
+./run.sh --docs ./external-docs
+# or
+TECHCORP_DOCS_PATH=/abs/path/to/docs ./run.sh
+```
+
+What `run.sh` does:
+- Creates/activates `.venv`
+- Installs `rag-project/requirements.txt`
+- Respects `TECHCORP_DOCS_PATH` (or `--docs`)
+- Starts `rag-assistant/app.py` on port 5252
+
+Then open `http://localhost:5252`.
+
+## Manual Setup
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r rag-project/requirements.txt
+export OPENAI_API_KEY=your-key
+cd rag-assistant && python app.py
+```
+
+## Configure documents folder
+
+Set an alternative folder of Markdown docs to ingest:
+
+```bash
+export TECHCORP_DOCS_PATH=/path/to/your-docs
+./run.sh
+```
+
+If unset, defaults to `techcorp-docs/` at the repo root.
+
 ## Features
 - AI-powered solutions
 - Modern development practices

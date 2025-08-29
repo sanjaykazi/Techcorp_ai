@@ -12,29 +12,44 @@ This guide will help you get the TechCorp AI assistant running on your machine q
 
 ## ⚡ Quick Setup
 
-### Step 1: Clone and Navigate
+### Option A: One-command start (recommended)
+```bash
+git clone https://github.com/sanjaykazi/Techcorp_ai.git
+cd Techcorp_ai
+./run.sh
+```
+
+Use a different docs folder:
+```bash
+./run.sh --docs ./external-docs
+# or
+TECHCORP_DOCS_PATH=/abs/path/to/docs ./run.sh
+```
+
+### Option B: Manual setup
+#### Step 1: Clone and Navigate
 ```bash
 git clone https://github.com/sanjaykazi/Techcorp_ai.git
 cd Techcorp_ai
 ```
 
-### Step 2: Create Virtual Environment
+#### Step 2: Create Virtual Environment
 ```bash
 python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-### Step 3: Install Dependencies
+#### Step 3: Install Dependencies
 ```bash
 pip install -r rag-project/requirements.txt
 ```
 
-### Step 4: Set API Key
+#### Step 4: Set API Key
 ```bash
 export OPENAI_API_KEY="your-api-key-here"
 ```
 
-### Step 5: Launch the App
+#### Step 5: Launch the App
 ```bash
 cd rag-assistant
 python app.py
@@ -108,7 +123,7 @@ chmod +r techcorp-docs/**/*.md
 
 ## 🔄 Adding New Documents
 
-1. **Place files** in appropriate `techcorp-docs/` subdirectories
+1. **Place files** in appropriate `techcorp-docs/` subdirectories (or in the folder set via `TECHCORP_DOCS_PATH`)
 2. **Restart the app** to auto-process new documents
 3. **Documents are automatically** chunked and vectorized
 
@@ -133,6 +148,23 @@ curl http://localhost:5252/api/status
   "last_updated": "2024-01-15T10:30:00Z"
 }
 ```
+
+## ⚙️ Configuring the documents folder
+
+You can point the app to any folder of markdown documents using an environment variable or script argument:
+
+- Environment variable:
+```bash
+export TECHCORP_DOCS_PATH=/path/to/your-docs
+./run.sh
+```
+
+- Script argument:
+```bash
+./run.sh --docs ./external-docs
+```
+
+If unset, the app defaults to `techcorp-docs/` in the repo root.
 
 ## 🎯 Next Steps
 
