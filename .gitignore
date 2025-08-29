@@ -1,0 +1,35 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+rag-project/venv/
+
+# Environment/config
+.env
+.env.*
+
+# Editors/IDE
+.vscode/
+.history/
+.idea/
+
+# RAG/Vector DB artifacts
+rag-assistant/chroma_db/
+rag-project/chroma_db/
+
+# Local databases
+*.sqlite3
+
+# Large or generated artifacts
+rag-project/*.txt
+
+
