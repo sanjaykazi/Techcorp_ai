@@ -56,6 +56,6 @@ fi
 echo "[run] TECHCORP_DOCS_PATH=${TECHCORP_DOCS_PATH:-<default>}"
 
 cd "$ROOT_DIR/rag-assistant"
-exec python app.py
+exec "$VENV_DIR/bin/python" app.py
 
 
