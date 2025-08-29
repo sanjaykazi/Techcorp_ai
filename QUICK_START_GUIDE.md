@@ -128,9 +128,11 @@ chmod +r techcorp-docs/**/*.md
 3. **Documents are automatically** chunked and vectorized
 
 ### Supported Formats:
-- **Markdown (.md)**: Full support with formatting
-- **Text (.txt)**: Basic text support
-- **Future**: PDF, Word, and more
+- **Markdown (.md)**
+- **Text (.txt)**
+- **PDF (.pdf)** — requires `pypdf`
+- **Word (.docx)** — requires `python-docx`
+- **PowerPoint (.pptx)** — requires `python-pptx`
 
 ## 📊 System Status
 

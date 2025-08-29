@@ -30,6 +30,8 @@ rag-project/chroma_db/
 *.sqlite3
 
 # Large or generated artifacts
+# Don't ignore dependency files
 rag-project/*.txt
+!rag-project/requirements.txt
 
 

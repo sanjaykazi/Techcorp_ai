@@ -55,6 +55,17 @@ export TECHCORP_DOCS_PATH=/path/to/your-docs
 
 If unset, defaults to `techcorp-docs/` at the repo root.
 
+## Supported document formats
+
+On first run, the app will ingest and vectorize documents with the following extensions:
+
+- `.md`, `.txt`
+- `.pdf` (requires `pypdf`)
+- `.docx` (requires `python-docx`)
+- `.pptx` (requires `python-pptx`)
+
+Place them under your configured docs folder (default `techcorp-docs/`), organized in subdirectories by category.
+
 ## Features
 - AI-powered solutions
 - Modern development practices

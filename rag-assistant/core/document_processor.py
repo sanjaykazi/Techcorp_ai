@@ -39,14 +39,18 @@ class DocumentProcessor:
         # Clear existing data
         self.vector_engine.clear_collection()
         
+        # Supported extensions
+        supported_exts = {".md", ".txt", ".pdf", ".docx", ".pptx"}
+
         # Process each category
         for category in self.docs_path.iterdir():
             if category.is_dir():
-                for doc_file in category.glob("*.md"):
-                    chunks = self.process_document(doc_file, category.name)
-                    chunk_count += len(chunks)
-                    processed_count += 1
-                    print(f"Processed: {doc_file.name} ({len(chunks)} chunks)")
+                for doc_file in category.rglob("*"):
+                    if doc_file.is_file() and doc_file.suffix.lower() in supported_exts:
+                        chunks = self.process_document(doc_file, category.name)
+                        chunk_count += len(chunks)
+                        processed_count += 1
+                        print(f"Processed: {doc_file.name} ({len(chunks)} chunks)")
         
         return {
             "processed": processed_count,
@@ -55,11 +59,10 @@ class DocumentProcessor:
     
     def process_document(self, file_path: Path, category: str) -> List[Dict[str, Any]]:
         """Process a single document into chunks"""
-        with open(file_path, 'r', encoding='utf-8') as f:
-            content = f.read()
+        content = self._read_file_to_text(file_path)
         
         # Extract metadata from document
-        title = self._extract_title(content)
+        title = self._extract_title(content) or file_path.stem.replace('-', ' ').title()
         doc_id = hashlib.md5(str(file_path).encode()).hexdigest()
         
         # Create chunks
@@ -72,7 +75,7 @@ class DocumentProcessor:
                 "id": f"{doc_id}_{i}",
                 "text": chunk_text,
                 "metadata": {
-                    "title": title or file_path.stem.replace('-', ' ').title(),
+                    "title": title,
                     "category": category,
                     "file": file_path.name,
                     "chunk_index": i,
@@ -90,6 +93,51 @@ class DocumentProcessor:
             processed_chunks.append(chunk_data)
         
         return processed_chunks
+
+    def _read_file_to_text(self, file_path: Path) -> str:
+        """Read various file formats and return plain text"""
+        suffix = file_path.suffix.lower()
+        if suffix in {".md", ".txt"}:
+            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                return f.read()
+        if suffix == ".pdf":
+            try:
+                from pypdf import PdfReader
+            except Exception:
+                raise RuntimeError("pypdf is required to read PDF files. Please install it.")
+            text_parts: List[str] = []
+            reader = PdfReader(str(file_path))
+            for page in reader.pages:
+                try:
+                    page_text = page.extract_text() or ""
+                except Exception:
+                    page_text = ""
+                if page_text:
+                    text_parts.append(page_text)
+            return "\n\n".join(text_parts)
+        if suffix == ".docx":
+            try:
+                import docx  # python-docx
+            except Exception:
+                raise RuntimeError("python-docx is required to read DOCX files. Please install it.")
+            doc = docx.Document(str(file_path))
+            paragraphs = [p.text for p in doc.paragraphs if p.text]
+            return "\n".join(paragraphs)
+        if suffix == ".pptx":
+            try:
+                from pptx import Presentation  # python-pptx
+            except Exception:
+                raise RuntimeError("python-pptx is required to read PPTX files. Please install it.")
+            prs = Presentation(str(file_path))
+            texts: List[str] = []
+            for slide in prs.slides:
+                for shape in slide.shapes:
+                    if hasattr(shape, "text") and shape.text:
+                        texts.append(shape.text)
+            return "\n\n".join(texts)
+        # Fallback: treat as text
+        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+            return f.read()
     
     def _extract_title(self, content: str) -> str:
         """Extract title from markdown document"""
