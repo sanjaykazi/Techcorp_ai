@@ -126,8 +126,7 @@ def upload_chat():
     try:
         data = request.json or {}
         user_message = data.get('message', '').strip()
-        doc_text = data.get('text', '')
-        meta = data.get('metadata', {})
+        doc_text = data.get('document_text', '')  # Fixed: frontend sends 'document_text'
         if not user_message:
             return jsonify({'error': 'No message provided'}), 400
         if not doc_text:
@@ -138,9 +137,9 @@ def upload_chat():
             'id': 'uploaded_0',
             'text': doc_text,
             'metadata': {
-                'title': meta.get('title', 'Uploaded Document'),
+                'title': 'Uploaded Document',
                 'category': 'uploaded',
-                'file': meta.get('file', 'upload'),
+                'file': 'upload',
             },
             'score': 0.9
         }]
