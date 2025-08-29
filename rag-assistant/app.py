@@ -7,6 +7,7 @@ from flask import Flask, render_template, request, jsonify, Response, stream_wit
 import os
 import sys
 from datetime import datetime
+from werkzeug.utils import secure_filename
 import json
 import time
 
@@ -18,6 +19,8 @@ from core.chat_engine import ChatEngine
 from core.document_processor import DocumentProcessor
 
 app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 25 * 1024 * 1024  # 25MB
+app.config['UPLOAD_EXTENSIONS'] = {'.md', '.txt', '.pdf', '.docx', '.pptx'}
 
 # Initialize RAG components
 print("\n" + "="*60)
@@ -42,6 +45,11 @@ def index():
     """Render the chat interface"""
     return render_template('chat.html')
 
+@app.route('/upload')
+def upload_page():
+    """Render the upload-based QA interface"""
+    return render_template('upload.html')
+
 @app.route('/api/chat', methods=['POST'])
 def chat():
     """Handle chat messages"""
@@ -62,6 +70,83 @@ def chat():
             'timestamp': datetime.now().isoformat()
         })
         
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/upload', methods=['POST'])
+def upload_file():
+    """Accept a single file upload and return parsed text + basic metadata."""
+    try:
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file provided'}), 400
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'error': 'Empty filename'}), 400
+
+        filename = secure_filename(file.filename)
+        ext = os.path.splitext(filename)[1].lower()
+        if ext not in app.config['UPLOAD_EXTENSIONS']:
+            return jsonify({'error': f'Unsupported file type: {ext}'}), 400
+
+        # Save to tmp and parse using DocumentProcessor's readers
+        tmp_dir = os.path.join(os.path.dirname(__file__), 'tmp_uploads')
+        os.makedirs(tmp_dir, exist_ok=True)
+        tmp_path = os.path.join(tmp_dir, filename)
+        file.save(tmp_path)
+
+        # Use DocumentProcessor reading method
+        from core.document_processor import DocumentProcessor
+        temp_processor = DocumentProcessor(vector_engine)
+        from pathlib import Path
+        text = temp_processor._read_file_to_text(Path(tmp_path))
+
+        # Cleanup tmp file
+        try:
+            os.remove(tmp_path)
+        except Exception:
+            pass
+
+        meta = {
+            'title': os.path.splitext(filename)[0],
+            'file': filename,
+            'size_bytes': len(text.encode('utf-8')),
+        }
+        return jsonify({'text': text, 'metadata': meta})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/upload/chat', methods=['POST'])
+def upload_chat():
+    """Answer questions based on the uploaded document text sent by the client."""
+    try:
+        data = request.json or {}
+        user_message = data.get('message', '').strip()
+        doc_text = data.get('text', '')
+        meta = data.get('metadata', {})
+        if not user_message:
+            return jsonify({'error': 'No message provided'}), 400
+        if not doc_text:
+            return jsonify({'error': 'No document text provided'}), 400
+
+        # Create a pseudo-document list for ChatEngine
+        pseudo_docs = [{
+            'id': 'uploaded_0',
+            'text': doc_text,
+            'metadata': {
+                'title': meta.get('title', 'Uploaded Document'),
+                'category': 'uploaded',
+                'file': meta.get('file', 'upload'),
+            },
+            'score': 0.9
+        }]
+
+        result = chat_engine.get_response_from_docs(user_message, pseudo_docs)
+        return jsonify({
+            'response': result['answer'],
+            'sources': result['sources'],
+            'confidence': result['confidence'],
+            'timestamp': datetime.now().isoformat()
+        })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

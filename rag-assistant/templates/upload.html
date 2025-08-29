@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechCorp AI - Upload QA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>📄 Upload Document QA</h1>
+                <div>
+                    <a href="/" style="text-decoration: none;">← Back to Chat</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="chat-container">
+            <div class="chat-messages" id="upload-messages">
+                <div class="message assistant">
+                    <div class="message-content">
+                        <p>Upload a document (.md, .txt, .pdf, .docx, .pptx). I will answer questions based only on the uploaded content.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="padding: 12px; display: flex; gap: 8px; align-items: center;">
+                <input type="file" id="file-input" accept=".md,.txt,.pdf,.docx,.pptx">
+                <button id="upload-button">Upload</button>
+                <span id="file-status" style="font-size: 12px; color: #666;"></span>
+            </div>
+
+            <div class="chat-input-container">
+                <input type="text" id="upload-chat-input" placeholder="Ask about the uploaded document..." autocomplete="off">
+                <button id="upload-send-button" title="Send message">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+</body>
+</html>
+

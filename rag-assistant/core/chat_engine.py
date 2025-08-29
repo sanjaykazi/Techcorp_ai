@@ -160,3 +160,37 @@ Please provide a helpful and accurate answer based on the context provided. If t
                 response += f"• {doc['metadata']['title']}: {doc['text'][:100]}...\n"
         
         return response
+
+    # New: Generate response using provided documents (e.g., uploaded file session)
+    def get_response_from_docs(self, user_query: str, documents: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Generate a response using a provided set of documents already retrieved.
+        Each document dict should include keys: 'text', 'metadata', and optional 'score'."""
+        # Deduplicate by title similar to normal path
+        unique_docs: List[Dict[str, Any]] = []
+        seen_titles = set()
+        for doc in documents:
+            title = doc.get('metadata', {}).get('title', 'Document')
+            if title not in seen_titles:
+                seen_titles.add(title)
+                unique_docs.append(doc)
+
+        context = self._create_context(unique_docs)
+        augmented_prompt = self._create_augmented_prompt(user_query, context)
+
+        try:
+            response = self.client.chat.completions.create(
+                model="deepseek/deepseek-chat",
+                messages=[
+                    {"role": "system", "content": self.system_prompt},
+                    {"role": "user", "content": augmented_prompt}
+                ],
+                temperature=0.7,
+                max_tokens=500
+            )
+
+            answer = response.choices[0].message.content
+            scores = [d.get('score', 0.7) for d in unique_docs[:3]] or [0.5]
+            confidence = sum(scores) / len(scores)
+            return {"answer": answer, "sources": unique_docs, "confidence": confidence}
+        except Exception:
+            return {"answer": self._create_fallback_response(user_query, unique_docs), "sources": unique_docs, "confidence": 0.5}
