@@ -18,10 +18,17 @@ document.addEventListener('DOMContentLoaded', function() {
     fileUploadArea.addEventListener('dragover', handleDragOver);
     fileUploadArea.addEventListener('dragleave', handleDragLeave);
     fileUploadArea.addEventListener('drop', handleDrop);
-    fileUploadArea.addEventListener('click', () => fileInput.click());
     
     // Upload button handler
-    uploadBtn.addEventListener('click', handleUpload);
+    uploadBtn.addEventListener('click', function() {
+        if (!fileInput.files || fileInput.files.length === 0) {
+            // If no file selected, open file picker
+            fileInput.click();
+        } else {
+            // If file already selected, upload it
+            handleUpload();
+        }
+    });
     
     // Chat input handlers
     documentChatInput.addEventListener('keydown', function(e) {
@@ -69,6 +76,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         fileText.textContent = `Selected: ${file.name}`;
         fileHint.textContent = `Size: ${(file.size / 1024).toFixed(1)} KB | Type: ${file.type || 'Unknown'}`;
+        
+        // Update button text
+        uploadBtn.textContent = 'Upload Document';
     }
 
     async function handleUpload() {
@@ -202,10 +212,11 @@ document.addEventListener('DOMContentLoaded', function() {
     function resetFileSelection() {
         fileInput.value = '';
         uploadBtn.disabled = true;
+        uploadBtn.textContent = 'Select Document';
         const fileText = fileUploadArea.querySelector('.file-upload-text');
         const fileHint = fileUploadArea.querySelector('.file-upload-hint');
         
-        fileText.textContent = 'Drop your document here or click to browse';
+        fileText.textContent = 'Drop your document here or click the button below to browse';
         fileHint.textContent = 'Supports: PDF, DOCX, PPTX, TXT, MD';
     }
 
