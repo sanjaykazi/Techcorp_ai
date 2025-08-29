@@ -3,56 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TechCorp AI Assistant</title>
+    <title>TechCorp AI Assistant - Chat</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header>
-            <div class="header-content">
-                <h1><a href="/" style="text-decoration: none; color: inherit; cursor: pointer;">💬 TechCorp AI Assistant</a></h1>
-                <div class="status-bar">
-                    <span class="status-indicator" id="status-dot"></span>
-                    <span id="status-text">Ready</span>
-                </div>
-                <div class="nav-links">
-                    <a href="/" style="text-decoration: none; font-size: 14px; margin-right: 15px;">🏠 Home</a>
-                    <a href="/upload" style="text-decoration: none; font-size: 14px;">📄 Upload</a>
-                </div>
+    <header>
+        <div class="header-content">
+            <h1><a href="/">💬 TechCorp AI Assistant</a></h1>
+            <div class="status-bar">
+                <span class="status-indicator" id="status-dot"></span>
+                <span id="status-text">Ready</span>
             </div>
-        </header>
+            <div class="nav-links">
+                <a href="/">🏠 Home</a>
+                <a href="/upload">📄 Upload</a>
+            </div>
+        </div>
+    </header>
 
-        <!-- Chat Container -->
+    <div class="container">
         <div class="chat-container">
+            <div class="chat-header">
+                <h2>💬 AI Chat Assistant</h2>
+            </div>
+            
             <div class="chat-messages" id="chat-messages">
                 <div class="message assistant">
+                    <div class="message-avatar">🤖</div>
                     <div class="message-content">
-                        <p>Hello! I'm your TechCorp AI Assistant. I can help you with:</p>
-                        <ul>
-                            <li>Employee policies and benefits</li>
-                            <li>Product information (CloudSync Pro, DataVault)</li>
-                            <li>Meeting decisions and company updates</li>
-                            <li>Customer FAQs and support</li>
-                        </ul>
-                        <p>What would you like to know?</p>
+                        Hello! I'm your TechCorp AI Assistant. I can help you with questions about your documents and knowledge base. How can I assist you today?
                     </div>
                 </div>
             </div>
-
-            <!-- Input Area -->
+            
             <div class="chat-input-container">
-                <input 
-                    type="text" 
-                    id="chat-input" 
-                    placeholder="Type your question here..."
-                    autocomplete="off"
-                >
-                <button id="send-button" title="Send message">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
+                <div class="chat-input-wrapper">
+                    <textarea 
+                        id="chat-input" 
+                        class="chat-input"
+                        placeholder="Type your message here..."
+                        rows="3"
+                        maxlength="1000"
+                    ></textarea>
+                    <button id="send-button" class="send-btn">
+                        <span id="send-text">Send</span>
+                        <span id="send-loading" class="loading" style="display: none;"></span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>

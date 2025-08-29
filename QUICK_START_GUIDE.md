@@ -158,7 +158,8 @@ You can point the app to any folder of markdown documents using an environment v
 - Environment variable:
 ```bash
 export TECHCORP_DOCS_PATH=/path/to/your-docs
-./run.sh
+
+
 ```
 
 - Script argument:

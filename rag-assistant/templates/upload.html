@@ -3,43 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TechCorp AI - Upload QA</title>
+    <title>TechCorp AI Assistant - Upload Document</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="header-content">
-                <h1><a href="/" style="text-decoration: none; color: inherit; cursor: pointer;">📄 Upload Document QA</a></h1>
-                <div class="nav-links">
-                    <a href="/" style="text-decoration: none; font-size: 14px; margin-right: 15px;">🏠 Home</a>
-                    <a href="/chat" style="text-decoration: none; font-size: 14px;">💬 Chat</a>
-                </div>
+    <header>
+        <div class="header-content">
+            <h1><a href="/">📄 Upload Document QA</a></h1>
+            <div class="nav-links">
+                <a href="/">🏠 Home</a>
+                <a href="/chat">💬 Chat</a>
             </div>
-        </header>
+        </div>
+    </header>
 
-        <div class="chat-container">
-            <div class="chat-messages" id="upload-messages">
+    <div class="container">
+        <div class="upload-container">
+            <div class="upload-header">
+                <h2>📄 Document Upload & Q&A</h2>
+            </div>
+            
+            <div class="upload-section">
+                <div class="file-upload-area" id="file-upload-area">
+                    <div class="file-upload-icon">📁</div>
+                    <div class="file-upload-text">Drop your document here or click to browse</div>
+                    <div class="file-upload-hint">Supports: PDF, DOCX, PPTX, TXT, MD</div>
+                    <input type="file" id="file-input" class="file-input" accept=".pdf,.docx,.pptx,.txt,.md">
+                    <button class="upload-btn" id="upload-btn" disabled>Upload Document</button>
+                </div>
+                
+                <div id="upload-status" class="upload-status" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <!-- Chat section for uploaded document -->
+        <div class="chat-container" id="document-chat" style="display: none; margin-top: 2rem;">
+            <div class="chat-header">
+                <h2>💬 Document Q&A</h2>
+            </div>
+            
+            <div class="chat-messages" id="document-chat-messages">
                 <div class="message assistant">
+                    <div class="message-avatar">🤖</div>
                     <div class="message-content">
-                        <p>Upload a document (.md, .txt, .pdf, .docx, .pptx). I will answer questions based only on the uploaded content.</p>
+                        I've analyzed your document. Ask me any questions about it!
                     </div>
                 </div>
             </div>
-
-            <div style="padding: 12px; display: flex; gap: 8px; align-items: center;">
-                <input type="file" id="file-input" accept=".md,.txt,.pdf,.docx,.pptx">
-                <button id="upload-button">Upload</button>
-                <span id="file-status" style="font-size: 12px; color: #666;"></span>
-            </div>
-
+            
             <div class="chat-input-container">
-                <input type="text" id="upload-chat-input" placeholder="Ask about the uploaded document..." autocomplete="off">
-                <button id="upload-send-button" title="Send message">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
+                <div class="chat-input-wrapper">
+                    <textarea 
+                        id="document-chat-input" 
+                        class="chat-input"
+                        placeholder="Ask a question about your document..."
+                        rows="3"
+                        maxlength="1000"
+                    ></textarea>
+                    <button id="document-send-button" class="send-btn">
+                        <span id="document-send-text">Send</span>
+                        <span id="document-send-loading" class="loading" style="display: none;"></span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
