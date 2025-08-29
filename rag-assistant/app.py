@@ -41,7 +41,12 @@ doc_processor = DocumentProcessor(vector_engine, docs_path=docs_path_override)
 print("[INIT] Document processor ready")
 
 @app.route('/')
-def index():
+def home():
+    """Render the home interface"""
+    return render_template('home.html')
+
+@app.route('/chat')
+def chat_page():
     """Render the chat interface"""
     return render_template('chat.html')
 

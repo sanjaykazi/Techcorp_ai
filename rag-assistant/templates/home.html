@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechCorp AI - Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .home-actions { display: flex; gap: 16px; margin-top: 24px; }
+        .home-card { border: 1px solid #eee; border-radius: 12px; padding: 20px; background: #fff; }
+        .home-btn { padding: 12px 16px; border-radius: 8px; border: none; cursor: pointer; background: #0d6efd; color: #fff; }
+        .home-btn.secondary { background: #6c757d; }
+    </style>
+    </head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>🤖 TechCorp AI Assistant</h1>
+            </div>
+        </header>
+        <div class="chat-container">
+            <div class="home-card">
+                <h2>Welcome</h2>
+                <p>Choose how you want to interact:</p>
+                <div class="home-actions">
+                    <form action="/chat" method="get">
+                        <button class="home-btn" type="submit">Open Chat (Knowledge Base)</button>
+                    </form>
+                    <form action="/upload" method="get">
+                        <button class="home-btn secondary" type="submit">Upload Document QA</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
