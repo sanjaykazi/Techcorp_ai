@@ -49,25 +49,6 @@ document.addEventListener('DOMContentLoaded', function() {
             .finally(() => setLoadingState(false));
     }
 
-    function addMessage(content, sender) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${sender}`;
-        
-        const avatar = document.createElement('div');
-        avatar.className = 'message-avatar';
-        avatar.textContent = sender === 'user' ? '👤' : '🤖';
-        
-        const messageContent = document.createElement('div');
-        messageContent.className = 'message-content';
-        messageContent.textContent = content;
-        
-        messageDiv.appendChild(avatar);
-        messageDiv.appendChild(messageContent);
-        
-        chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
     function setLoadingState(loading) {
         isStreaming = loading;
         sendButton.disabled = loading;
@@ -100,6 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const decoder = new TextDecoder();
         let assistantMessage = '';
         let messageDiv = null;
+        let sources = null;
 
         try {
             while (true) {
@@ -113,6 +95,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (line.startsWith('data: ')) {
                         const data = line.slice(6);
                         if (data === '[DONE]') {
+                            // Add sources if available
+                            if (sources && sources.length > 0) {
+                                addSourcesToMessage(messageDiv, sources);
+                            }
                             return;
                         }
 
@@ -138,6 +124,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                 assistantMessage += parsed.content;
                                 messageDiv.querySelector('.message-content').textContent = assistantMessage;
                                 chatMessages.scrollTop = chatMessages.scrollHeight;
+                            } else if (parsed.sources && parsed.sources.length > 0) {
+                                sources = parsed.sources;
                             }
                         } catch (e) {
                             console.error('Error parsing stream data:', e);
@@ -165,11 +153,71 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             const data = await response.json();
-            addMessage(data.response, 'assistant');
+            const messageDiv = addMessage(data.response, 'assistant');
+            
+            // Add sources if available
+            if (data.sources && data.sources.length > 0) {
+                addSourcesToMessage(messageDiv, data.sources);
+            }
         } catch (error) {
             console.error('Error:', error);
             addMessage('Sorry, I encountered an error. Please try again.', 'assistant');
         }
+    }
+
+    function addMessage(content, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender}`;
+        
+        const avatar = document.createElement('div');
+        avatar.className = 'message-avatar';
+        avatar.textContent = sender === 'user' ? '👤' : '🤖';
+        
+        const messageContent = document.createElement('div');
+        messageContent.className = 'message-content';
+        messageContent.textContent = content;
+        
+        messageDiv.appendChild(avatar);
+        messageDiv.appendChild(messageContent);
+        
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        return messageDiv;
+    }
+
+    function addSourcesToMessage(messageDiv, sources) {
+        if (!messageDiv || !sources || sources.length === 0) return;
+        
+        const messageContent = messageDiv.querySelector('.message-content');
+        
+        // Create sources section
+        const sourcesDiv = document.createElement('div');
+        sourcesDiv.className = 'sources';
+        sourcesDiv.innerHTML = '<small>📚 Sources:</small>';
+        
+        // Deduplicate sources by title
+        const uniqueSources = [];
+        const seenTitles = new Set();
+        
+        for (const source of sources) {
+            const title = source.metadata?.title || 'Document';
+            if (!seenTitles.has(title)) {
+                seenTitles.add(title);
+                uniqueSources.push(source);
+            }
+        }
+        
+        // Add source tags
+        uniqueSources.forEach(source => {
+            const sourceSpan = document.createElement('span');
+            sourceSpan.className = 'source-item';
+            sourceSpan.textContent = source.metadata?.title || 'Document';
+            sourceSpan.title = `Relevance: ${(source.score * 100).toFixed(1)}%`;
+            sourcesDiv.appendChild(sourceSpan);
+        });
+        
+        messageContent.appendChild(sourcesDiv);
     }
 
     async function checkStatus() {

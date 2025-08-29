@@ -443,6 +443,38 @@ header {
     border: 1px solid #feb2b2;
 }
 
+/* Sources */
+.sources {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.sources small {
+    color: #718096;
+    font-weight: 500;
+    margin-right: 0.5rem;
+}
+
+.source-item {
+    display: inline-block;
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+    padding: 0.25rem 0.75rem;
+    margin: 0.25rem;
+    border-radius: 16px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border: 1px solid rgba(102, 126, 234, 0.2);
+    transition: all 0.2s ease;
+}
+
+.source-item:hover {
+    background: rgba(102, 126, 234, 0.2);
+    border-color: rgba(102, 126, 234, 0.4);
+    transform: translateY(-1px);
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
     .header-content {
